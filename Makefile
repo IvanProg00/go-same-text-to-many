@@ -1,5 +1,5 @@
 assets = assets
-appFile = cmd/app/app.go
+appFile = cmd/main.go
 appName = app
 
 .PHONY: build
@@ -13,3 +13,7 @@ run: build
 .PHONY: clean
 clean:
 	rm $(appName)
+
+.PHONY: test
+test:
+	go test ./...

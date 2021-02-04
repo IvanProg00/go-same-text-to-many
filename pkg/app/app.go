@@ -1,11 +1,9 @@
-package main
+package app
 
 import (
-	"errors"
 	"fmt"
 	"go-same-text-to-many/pkg/config"
 	"go-same-text-to-many/pkg/file"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -15,16 +13,12 @@ const (
 	NumArguments = 3
 )
 
-var (
-	// AssetsPath ...
-	AssetsPath = "assets"
-)
-
-func main() {
+// Run ...
+func Run() {
 	arguments := os.Args[1:]
 	if len(arguments) < NumArguments {
 		fmt.Printf("Minimum %d arguments\n", NumArguments)
-		os.Exit(0)
+		return
 	}
 
 	configFile, err := filepath.Abs(arguments[0])
@@ -36,46 +30,41 @@ func main() {
 		os.Exit(0)
 	}
 
-	if err = ExistsFiles(configFile, contentFile); err != nil {
-		fmt.Println(err)
-		os.Exit(0)
+	searchFiles := []file.SearchFile{
+		{
+			FileName:    configFile,
+			IfNotExists: "File with configs not exists",
+		},
+		{
+			FileName:    contentFile,
+			IfNotExists: "File with contents not exists",
+		},
 	}
-	if !file.ExistsFile(contentFile) {
-		fmt.Println("File with contents not exists")
-		os.Exit(0)
+
+	if err = file.ExistsFiles(searchFiles); err != nil {
+		fmt.Println(err)
+		return
 	}
 
 	configs, err := file.ReadFile(configFile)
 	if err != nil {
-		log.Fatalln(err)
-		os.Exit(0)
+		fmt.Println(err)
+		return
 	}
 
 	configList, err := config.New(configs)
 	if err != nil {
-		log.Fatalln(err)
-		os.Exit(0)
+		fmt.Println(err)
+		return
 	}
 
 	content, err := file.ReadFile(contentFile)
 	if err != nil {
-		log.Fatalln(err)
-		os.Exit(0)
+		fmt.Println(err)
+		return
 	}
 
 	modifiedContent := configList.TransformData(content)
 
 	file.WriteFile(outputFile, modifiedContent)
-}
-
-// ExistsFiles ...
-func ExistsFiles(configFile, contentFile string) error {
-	if !file.ExistsFile(configFile) {
-		return errors.New("File with configs not exists")
-	}
-	if !file.ExistsFile(contentFile) {
-		return errors.New("File with contents not exists")
-	}
-
-	return nil
 }

@@ -1,9 +1,16 @@
 package file
 
 import (
+	"errors"
 	"io/ioutil"
 	"os"
 )
+
+// SearchFile ...
+type SearchFile struct {
+	FileName    string
+	IfNotExists string
+}
 
 // ExistsFile ...
 func ExistsFile(fileName string) bool {
@@ -14,13 +21,15 @@ func ExistsFile(fileName string) bool {
 	return !file.IsDir()
 }
 
-// ExistsDir ...
-func ExistsDir(dirName string) bool {
-	dir, err := os.Stat(dirName)
-	if err != nil {
-		return false
+// ExistsFiles ...
+func ExistsFiles(searchFiles []SearchFile) error {
+	for _, searchFile := range searchFiles {
+		if !ExistsFile(searchFile.FileName) {
+			return errors.New(searchFile.IfNotExists)
+		}
 	}
-	return dir.IsDir()
+
+	return nil
 }
 
 // ReadFile ...
