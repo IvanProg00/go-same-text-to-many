@@ -1,3 +1,4 @@
+assets = assets
 appFile = cmd/app/app.go
 appName = app
 
@@ -7,7 +8,7 @@ build:
 
 .PHONY: run
 run: build
-	./${appName} configs.txt content.txt output.txt
+	./$(appName) $(assets)/configs.txt $(assets)/content.txt $(assets)/output.txt
 
 .PHONY: clean
 clean:
