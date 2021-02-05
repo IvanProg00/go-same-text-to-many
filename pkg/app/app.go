@@ -5,7 +5,6 @@ import (
 	"go-same-text-to-many/pkg/config"
 	"go-same-text-to-many/pkg/file"
 	"os"
-	"path/filepath"
 )
 
 const (
@@ -21,27 +20,22 @@ func Run() {
 		return
 	}
 
-	configFile, err := filepath.Abs(arguments[0])
-	contentFile, err := filepath.Abs(arguments[1])
-	outputFile, err := filepath.Abs(arguments[2])
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(0)
-	}
+	configFile := arguments[0]
+	contentFile := arguments[1]
+	outputFile := arguments[2]
 
 	searchFiles := []file.SearchFile{
 		{
 			FileName:    configFile,
-			IfNotExists: "File with configs not exists",
+			IfNotExists: fmt.Sprintf("File with configs <%s> not exists", configFile),
 		},
 		{
 			FileName:    contentFile,
-			IfNotExists: "File with contents not exists",
+			IfNotExists: fmt.Sprintf("File with contents <%s> not exists", contentFile),
 		},
 	}
 
-	if err = file.ExistsFiles(searchFiles); err != nil {
+	if err := file.ExistsFiles(searchFiles); err != nil {
 		fmt.Println(err)
 		return
 	}
